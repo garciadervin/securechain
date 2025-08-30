@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { toPng } from "html-to-image";
 import type { NextPage } from "next";
+import { QRCodeSVG } from "qrcode.react";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 type RiskLevel = "low" | "medium" | "high";
 type Tab = "resumen" | "analisis" | "chat";
@@ -150,86 +153,27 @@ const ResultsPage: NextPage = () => {
             </div>
           </>
         )}
-
-        {activeTab === "analisis" && (
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Análisis Semántico</h3>
-            <p className="mb-4">
-              Este contrato ha sido evaluado y presenta un puntaje alto de seguridad. Las funciones principales
-              gestionan depósitos y retiros con control de acceso adecuado.
-            </p>
-            <h4 className="font-semibold mb-1">Observaciones</h4>
-            <ul className="list-disc list-inside space-y-1">
-              <li>No se detectaron patrones de reentrancy.</li>
-              <li>Uso correcto de modifiers para control de roles.</li>
-            </ul>
-          </div>
-        )}
-
-        {activeTab === "chat" && (
-          <div className="flex flex-col h-96 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-            <div className="flex-1 p-4 overflow-y-auto space-y-3">
-              <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg max-w-xs">
-                Hola, puedo responder preguntas sobre el análisis de este contrato.
-              </div>
-            </div>
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700 flex gap-2">
-              <input
-                type="text"
-                placeholder="Escribe tu pregunta..."
-                className="flex-1 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              />
-              <button className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-sm">
-                Enviar
-              </button>
-            </div>
-          </div>
-        )}
       </div>
       {/* Modal NFT */}
       <Modal open={showNFTModal} onClose={() => setShowNFTModal(false)} title="Generar NFT de Certificación">
-        <div className="flex flex-col items-center">
-          <div className="w-full h-48 bg-gradient-to-br from-emerald-500 to-emerald-700 flex flex-col items-center justify-center text-white rounded-md mb-4">
-            <span className="text-lg font-bold">SecureChain</span>
-            <span className="text-sm">Proof-of-Audit NFT</span>
-            <span className="mt-2 font-mono text-xs">{auditData.auditedContract}</span>
-            <span className="mt-1">Score: {auditData.score}</span>
-            <span className="mt-1 text-xs">CID: {auditData.cid}</span>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
-            Este NFT se emitirá como prueba de auditoría en blockchain. Pulsa &quot;Confirmar&quot; para proceder con la
-            generación.
-          </p>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowNFTModal(false)}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={() => {
-                // Aquí luego irá la lógica para llamar a mintAudit
-                setShowNFTModal(false);
-              }}
-              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-sm"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
+        <NFTModalContent auditData={auditData} onClose={() => setShowNFTModal(false)} />
       </Modal>
 
       {/* Modal QR */}
       <Modal open={showQRModal} onClose={() => setShowQRModal(false)} title="Generar Código QR de Verificación">
         <div className="flex flex-col items-center">
           <div className="bg-white p-2 rounded-md dark:bg-gray-900">
-            <div className="w-40 h-40 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm rounded-md">
-              QR
-            </div>
+            <QRCodeSVG
+              value={`https://securechain.app/audit/${auditData.tokenId}`}
+              size={160}
+              bgColor="#FFFFFF"
+              fgColor="#000000"
+              level="H"
+            />
           </div>
+
           <p className="mt-3 text-sm text-gray-600 dark:text-gray-300 text-center">
-            Este código QR permitirá a cualquiera verificar esta auditoría en SecureChain.
+            Escanea este código para ver la auditoría completa en SecureChain.
           </p>
           <div className="flex gap-3 mt-4">
             <button
@@ -240,16 +184,80 @@ const ResultsPage: NextPage = () => {
             </button>
             <button
               onClick={() => {
-                // Aquí luego irá la lógica para generar y descargar el QR
-                setShowQRModal(false);
+                const handleDownloadQR = () => {
+                  const node = document.getElementById("qr-container");
+                  if (!node) return;
+                  toPng(node).then(dataUrl => {
+                    const link = document.createElement("a");
+                    link.download = `securechain-audit-${auditData.tokenId}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                  });
+                };
+                handleDownloadQR();
               }}
               className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-sm"
             >
-              Generar
+              Descargar
             </button>
           </div>
         </div>
       </Modal>
+    </div>
+  );
+};
+
+/* Contenido del modal NFT con integración Scaffold-ETH 2 */
+const NFTModalContent = ({ auditData, onClose }: { auditData: any; onClose: () => void }) => {
+  const { writeContractAsync: writeProofOfAuditAsync, isMining } = useScaffoldWriteContract({
+    contractName: "ProofOfAudit", // Debe coincidir con scaffold.config.ts
+  });
+
+  const handleMint = async () => {
+    try {
+      await writeProofOfAuditAsync({
+        functionName: "mintAudit",
+        args: [
+          auditData.to, // address to
+          auditData.auditedContract, // address auditedContract
+          BigInt(auditData.chainId), // chainId
+          auditData.score, // score
+          auditData.cid, // CID IPFS
+        ],
+      });
+      onClose();
+    } catch (e) {
+      console.error("Error generando NFT:", e);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full h-48 bg-gradient-to-br from-emerald-500 to-emerald-700 flex flex-col items-center justify-center text-white rounded-md mb-4">
+        <span className="text-lg font-bold">SecureChain</span>
+        <span className="text-sm">Proof-of-Audit NFT</span>
+        <span className="mt-2 font-mono text-xs">{auditData.auditedContract}</span>
+        <span className="mt-1">Score: {auditData.score}</span>
+        <span className="mt-1 text-xs">CID: {auditData.cid}</span>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
+        Este NFT se emitirá como prueba de auditoría en blockchain.
+      </p>
+      <div className="flex gap-3">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+        >
+          Cancelar
+        </button>
+        <button
+          onClick={handleMint}
+          disabled={isMining}
+          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-sm"
+        >
+          {isMining ? "Generando..." : "Confirmar"}
+        </button>
+      </div>
     </div>
   );
 };

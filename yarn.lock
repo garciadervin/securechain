@@ -10087,6 +10087,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"html-to-image@npm:^1.11.13":
+  version: 1.11.13
+  resolution: "html-to-image@npm:1.11.13"
+  checksum: 18da77cf6c1e7f821f320dc6941642ee292df136f38c548ecb77aa04718b979df63ba4ea56e53d1939b9dbe8e23ca10c44b55319a885bfe7f5f5023c1b5698fe
+  languageName: node
+  linkType: hard
+
 "http-cache-semantics@npm:^4.1.1":
   version: 4.2.0
   resolution: "http-cache-semantics@npm:4.2.0"
@@ -14060,6 +14067,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qr.js@npm:0.0.0":
+  version: 0.0.0
+  resolution: "qr.js@npm:0.0.0"
+  checksum: 5ac6c393967bdeaa660e7fd3a501a25eb538c1f6008a4d30ab2b97bbe520e5c236530090773f1578aa0a523cdaa6923c866615e21143f9e7cd22abd41c789b69
+  languageName: node
+  linkType: hard
+
 "qr@npm:~0":
   version: 0.5.1
   resolution: "qr@npm:0.5.1"
@@ -14235,6 +14249,18 @@ __metadata:
   dependencies:
     p-defer: ^3.0.0
   checksum: f10f435060551c470711ba0b3663e3d49c7701aae84ea645d66992d756b13e923fb5762b324d3583d85c1c0def4138b9cc3f686bab1c1bc10d3ad82dc7175c99
+  languageName: node
+  linkType: hard
+
+"react-qr-code@npm:^2.0.18":
+  version: 2.0.18
+  resolution: "react-qr-code@npm:2.0.18"
+  dependencies:
+    prop-types: ^15.8.1
+    qr.js: 0.0.0
+  peerDependencies:
+    react: "*"
+  checksum: c90164aac6c124d6a7aba2d9426859072d2233bb8d06102d23ef0c1831048e94cebc7608b821ff2b79f3a1cadf454305c727fd3e1d7742fd71f816cdeac04053
   languageName: node
   linkType: hard
 
@@ -14799,8 +14825,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "se-2@workspace:."
   dependencies:
+    html-to-image: ^1.11.13
     husky: ~9.1.6
     lint-staged: ~13.2.2
+    react-qr-code: ^2.0.18
   languageName: unknown
   linkType: soft
 
