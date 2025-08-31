@@ -1,4 +1,3 @@
-```markdown
 # 🔐 SecureChain
 
 **SecureChain** is a decentralized platform for auditing and certifying smart contracts on blockchain. It enables auditors to issue verifiable NFT certificates linked to IPFS reports, providing transparency, traceability, and trust for smart contract security.
@@ -104,5 +103,3 @@ This project is licensed under the MIT License.
 
 Developed with 💚 by [Dervin García](https://t.me/garciadervin)  
 Source code: [GitHub Repository](https://github.com/garciadervin/securechain)
-
-```
