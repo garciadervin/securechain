@@ -5,9 +5,9 @@
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
-  31337: {
+  11155111: {
     ProofOfAudit: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x97d9f2D2A75216183C866407a2235b02131B3238",
       abi: [
         {
           inputs: [
@@ -1115,7 +1115,7 @@ const deployedContracts = {
         revokeRole: "@openzeppelin/contracts/access/AccessControl.sol",
         eip712Domain: "@openzeppelin/contracts/utils/cryptography/EIP712.sol",
       },
-      deployedOnBlock: 1,
+      deployedOnBlock: 9103206,
     },
   },
 } as const;
