@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
 /**
- * Deploys the ProofOfAudit contract using the deployer account
+ * Deploys the ProofOfAudit contract using the deployer account.
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
@@ -10,19 +10,19 @@ const deployProofOfAudit: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  // Desplegar el contrato ProofOfAudit
+  // Deploy the ProofOfAudit contract
   const deployment = await deploy("ProofOfAudit", {
     from: deployer,
-    args: [deployer], // admin inicial del contrato
+    args: [deployer], // Initial admin address
     log: true,
-    autoMine: true, // acelera en redes locales
+    autoMine: true, // Speeds up deployment on local networks
   });
 
-  console.log(`✅ ProofOfAudit desplegado en: ${deployment.address}`);
-  console.log(`👤 Admin inicial: ${deployer}`);
+  console.log(`✅ ProofOfAudit deployed at: ${deployment.address}`);
+  console.log(`👤 Initial admin: ${deployer}`);
 };
 
 export default deployProofOfAudit;
 
-// Permite ejecutar solo este deploy con: yarn deploy --tags ProofOfAudit
+// Run this deploy script with: yarn deploy --tags ProofOfAudit
 deployProofOfAudit.tags = ["ProofOfAudit"];

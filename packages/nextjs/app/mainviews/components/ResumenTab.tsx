@@ -5,6 +5,9 @@ import { toPng } from "html-to-image";
 import { QRCodeSVG } from "qrcode.react";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
+/**
+ * Represents the audit data structure.
+ */
 export interface AuditData {
   auditedContract: string;
   chainId: number;
@@ -14,8 +17,14 @@ export interface AuditData {
   tokenId?: number;
 }
 
+/**
+ * ResumenTab Component
+ *
+ * Displays audit details, allows the user to generate a Proof-of-Audit NFT,
+ * and provides a QR code linking to the audit report.
+ */
 export default function ResumenTab() {
-  // Datos de prueba fijos
+  // Example static audit data (replace with real data in production)
   const auditData: AuditData = {
     auditedContract: "0x1234567890abcdef1234567890abcdef12345678",
     chainId: 1,
@@ -28,11 +37,18 @@ export default function ResumenTab() {
   const [showNFTModal, setShowNFTModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
 
+  // Determine QR code value (IPFS link or fallback URL)
   const qrValue =
     auditData.cid && auditData.cid.length > 0
       ? `https://ipfs.io/ipfs/${auditData.cid}`
-      : `${typeof window !== "undefined" ? window.location.origin : "https://securechain.app"}/audit/${auditData.tokenId ?? ""}`;
+      : `${typeof window !== "undefined"
+        ? window.location.origin
+        : "https://securechain.app"
+      }/audit/${auditData.tokenId ?? ""}`;
 
+  /**
+   * Downloads the QR code as a PNG image.
+   */
   const handleDownloadQR = async () => {
     const node = document.getElementById("qr-container");
     if (!node) return;
@@ -45,19 +61,21 @@ export default function ResumenTab() {
 
   return (
     <>
-      <h3 className="text-lg font-semibold mb-2">Datos de la auditoría (Prueba)</h3>
+      <h3 className="text-lg font-semibold mb-2">Audit Data (Test)</h3>
       <ul className="list-disc list-inside space-y-1 mb-4">
         <li>
-          <strong>Auditoría para:</strong> <span className="font-mono">{auditData.to}</span>
+          <strong>Audit for:</strong>{" "}
+          <span className="font-mono">{auditData.to}</span>
         </li>
         <li>
-          <strong>Contrato auditado:</strong> <span className="font-mono">{auditData.auditedContract}</span>
+          <strong>Audited contract:</strong>{" "}
+          <span className="font-mono">{auditData.auditedContract}</span>
         </li>
         <li>
           <strong>Chain ID:</strong> {auditData.chainId}
         </li>
         <li>
-          <strong>Reporte IPFS:</strong>{" "}
+          <strong>IPFS Report:</strong>{" "}
           <a
             href={`https://ipfs.io/ipfs/${auditData.cid}`}
             target="_blank"
@@ -69,47 +87,68 @@ export default function ResumenTab() {
         </li>
       </ul>
 
+      {/* Action buttons */}
       <div className="flex gap-4 mt-6">
         <button
           onClick={() => setShowNFTModal(true)}
           className="px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
         >
-          Generar NFT de Certificación
+          Generate Certification NFT
         </button>
         <button
           onClick={() => setShowQRModal(true)}
           className="px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
         >
-          Generar Código QR
+          Generate QR Code
         </button>
       </div>
 
-      {/* Modal NFT */}
-      <LocalModal open={showNFTModal} onClose={() => setShowNFTModal(false)} title="Generar NFT de Certificación">
-        <NFTModalContent auditData={auditData} onClose={() => setShowNFTModal(false)} />
+      {/* NFT Modal */}
+      <LocalModal
+        open={showNFTModal}
+        onClose={() => setShowNFTModal(false)}
+        title="Generate Certification NFT"
+      >
+        <NFTModalContent
+          auditData={auditData}
+          onClose={() => setShowNFTModal(false)}
+        />
       </LocalModal>
 
-      {/* Modal QR */}
-      <LocalModal open={showQRModal} onClose={() => setShowQRModal(false)} title="Generar Código QR de Verificación">
+      {/* QR Modal */}
+      <LocalModal
+        open={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        title="Generate Verification QR Code"
+      >
         <div className="flex flex-col items-center">
-          <div id="qr-container" className="bg-white p-2 rounded-md dark:bg-gray-900">
-            <QRCodeSVG value={qrValue} size={160} bgColor="#FFFFFF" fgColor="#000000" level="H" />
+          <div
+            id="qr-container"
+            className="bg-white p-2 rounded-md dark:bg-gray-900"
+          >
+            <QRCodeSVG
+              value={qrValue}
+              size={160}
+              bgColor="#FFFFFF"
+              fgColor="#000000"
+              level="H"
+            />
           </div>
           <p className="mt-3 text-sm text-gray-600 dark:text-gray-300 text-center">
-            Escanea este código para ver la auditoría completa.
+            Scan this code to view the full audit.
           </p>
           <div className="flex gap-3 mt-4">
             <button
               onClick={() => setShowQRModal(false)}
               className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
             >
-              Cerrar
+              Close
             </button>
             <button
               onClick={handleDownloadQR}
               className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-sm"
             >
-              Descargar
+              Download
             </button>
           </div>
         </div>
@@ -117,22 +156,38 @@ export default function ResumenTab() {
     </>
   );
 }
-
-/* Contenido del modal NFT */
-function NFTModalContent({ auditData, onClose }: { auditData: AuditData; onClose: () => void }) {
-  const { writeContractAsync: writeProofOfAuditAsync, isMining } = useScaffoldWriteContract({
-    contractName: "ProofOfAudit",
-  });
+/**
+ * NFTModalContent Component
+ *
+ * Handles the minting of a Proof-of-Audit NFT using the provided audit data.
+ */
+function NFTModalContent({
+  auditData,
+  onClose,
+}: {
+  auditData: AuditData;
+  onClose: () => void;
+}) {
+  const { writeContractAsync: writeProofOfAuditAsync, isMining } =
+    useScaffoldWriteContract({
+      contractName: "ProofOfAudit",
+    });
 
   const handleMint = async () => {
     try {
       await writeProofOfAuditAsync({
         functionName: "mintAudit",
-        args: [auditData.to, auditData.auditedContract, BigInt(auditData.chainId), auditData.score, auditData.cid],
+        args: [
+          auditData.to,
+          auditData.auditedContract,
+          BigInt(auditData.chainId),
+          auditData.score,
+          auditData.cid,
+        ],
       });
       onClose();
     } catch (e) {
-      console.error("Error generando NFT:", e);
+      console.error("Error generating NFT:", e);
     }
   };
 
@@ -146,28 +201,32 @@ function NFTModalContent({ auditData, onClose }: { auditData: AuditData; onClose
         <span className="mt-1 text-xs">CID: {auditData.cid}</span>
       </div>
       <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
-        Este NFT se emitirá como prueba de auditoría en blockchain.
+        This NFT will be issued as proof of the audit on the blockchain.
       </p>
       <div className="flex gap-3">
         <button
           onClick={onClose}
           className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
         >
-          Cancelar
+          Cancel
         </button>
         <button
           onClick={handleMint}
           disabled={isMining}
           className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-sm"
         >
-          {isMining ? "Generando..." : "Confirmar"}
+          {isMining ? "Generating..." : "Confirm"}
         </button>
       </div>
     </div>
   );
 }
 
-/* Modal local */
+/**
+ * LocalModal Component
+ *
+ * A simple reusable modal wrapper.
+ */
 function LocalModal({
   open,
   onClose,
@@ -184,12 +243,14 @@ function LocalModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-900 shadow-lg">
         <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 px-5 py-4">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+            {title}
+          </h3>
           <button
             onClick={onClose}
             className="rounded-md px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            Cerrar
+            Close
           </button>
         </div>
         <div className="px-5 py-4">{children}</div>

@@ -6,15 +6,17 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
   title: "SecureChain",
-  description: "Auditoría y certificación de contratos inteligentes en blockchain",
+  description: "Audit and certification of smart contracts on blockchain",
 });
 
 const SecureChainApp = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider enableSystem>
-          <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          <ScaffoldEthAppWithProviders>
+            {children}
+          </ScaffoldEthAppWithProviders>
         </ThemeProvider>
       </body>
     </html>

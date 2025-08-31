@@ -2,38 +2,44 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ProofOfAudit } from "../typechain-types";
 
+/**
+ * Test suite for the ProofOfAudit smart contract.
+ */
 describe("ProofOfAudit", function () {
   let proofOfAudit: ProofOfAudit;
   let owner: any;
   let auditor: any;
   let user: any;
 
+  /**
+   * Deploy the contract and assign roles before running tests.
+   */
   before(async () => {
     [owner, auditor, user] = await ethers.getSigners();
     const proofOfAuditFactory = await ethers.getContractFactory("ProofOfAudit");
     proofOfAudit = (await proofOfAuditFactory.deploy(owner.address)) as ProofOfAudit;
     await proofOfAudit.waitForDeployment();
 
-    // Asignar rol de auditor
+    // Assign AUDITOR_ROLE to the auditor account
     const AUDITOR_ROLE = await proofOfAudit.AUDITOR_ROLE();
     await proofOfAudit.connect(owner).grantRole(AUDITOR_ROLE, auditor.address);
   });
 
   describe("Deployment", function () {
-    it("Debe asignar el DEFAULT_ADMIN_ROLE al owner", async function () {
+    it("Should assign DEFAULT_ADMIN_ROLE to the owner", async function () {
       const DEFAULT_ADMIN_ROLE = await proofOfAudit.DEFAULT_ADMIN_ROLE();
       expect(await proofOfAudit.hasRole(DEFAULT_ADMIN_ROLE, owner.address)).to.equal(true);
     });
   });
 
-  describe("Mint de auditoría", function () {
-    it("Debe permitir a un auditor acuñar un NFT de auditoría", async function () {
+  describe("Audit minting", function () {
+    it("Should allow an auditor to mint an audit NFT", async function () {
       const tx = await proofOfAudit.connect(auditor).mintAudit(
         user.address,
-        "0x000000000000000000000000000000000000dEaD", // contrato auditado ficticio
-        31337, // chainId local
+        "0x000000000000000000000000000000000000dEaD", // dummy audited contract
+        31337, // local chainId
         95, // score
-        "QmHashDeEjemplo", // CID IPFS
+        "QmHashDeEjemplo" // IPFS CID
       );
 
       const receipt = await tx.wait();
@@ -57,12 +63,12 @@ describe("ProofOfAudit", function () {
       expect(auditData.cid).to.equal("QmHashDeEjemplo");
     });
 
-    it("Debe revertir si un address sin rol intenta acuñar", async function () {
+    it("Should revert if a non-auditor tries to mint", async function () {
       await expect(
         proofOfAudit
           .connect(user)
-          .mintAudit(user.address, "0x000000000000000000000000000000000000dEaD", 31337, 80, "QmOtroHash"),
-      ).to.be.revertedWithCustomError; // o .to.be.revertedWith("AccessControl: account ... is missing role ...")
+          .mintAudit(user.address, "0x000000000000000000000000000000000000dEaD", 31337, 80, "QmOtroHash")
+      ).to.be.revertedWith("AccessControl: account"); // or use .to.be.revertedWithCustomError if defined
     });
   });
 });

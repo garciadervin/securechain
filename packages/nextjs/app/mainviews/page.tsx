@@ -9,10 +9,20 @@ import type { NextPage } from "next";
 type RiskLevel = "low" | "medium" | "high";
 type Tab = "resumen" | "analisis" | "chat";
 
+/**
+ * ResultsPage Component
+ *
+ * Displays the audit results in three tabs:
+ *  - Summary (ResumenTab)
+ *  - Semantic Analysis (AnalisisTab)
+ *  - Chatbot (ChatbotTab)
+ *
+ * Also shows a risk score card at the top.
+ */
 const ResultsPage: NextPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("resumen");
 
-  // Datos de prueba fijos
+  // Example static audit data (replace with real data in production)
   const auditData = {
     auditedContract: "0x1234567890abcdef1234567890abcdef12345678",
     chainId: 1,
@@ -22,9 +32,11 @@ const ResultsPage: NextPage = () => {
     tokenId: 1,
   };
 
+  // Determine risk level based on score
   const riskLevel: RiskLevel =
     auditData.score >= 80 ? "low" : auditData.score >= 50 ? "medium" : "high";
 
+  // Return Tailwind classes for the risk card based on risk level
   const getRiskColor = () => {
     switch (riskLevel) {
       case "low":
@@ -38,26 +50,26 @@ const ResultsPage: NextPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center px-6 py-10">
-      {/* Encabezado */}
+      {/* Header */}
       <header className="w-full max-w-4xl mb-6">
         <h1 className="text-3xl font-bold text-emerald-500 mb-2">SecureChain</h1>
         <div className="text-sm text-gray-600 dark:text-gray-400">
-          Contrato auditado:{" "}
+          Audited contract:{" "}
           <span className="font-mono">{auditData.auditedContract}</span> | Chain ID:{" "}
           {auditData.chainId}
         </div>
       </header>
 
-      {/* Tarjeta de riesgo */}
+      {/* Risk score card */}
       <div
         className={`w-full max-w-4xl rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 text-center ${getRiskColor()}`}
       >
-        <h2 className="text-sm uppercase tracking-wide font-medium">Puntuación de Riesgo</h2>
+        <h2 className="text-sm uppercase tracking-wide font-medium">Risk Score</h2>
         <p className="text-5xl font-bold mt-2">{auditData.score}</p>
         <span className="block mt-1 text-lg font-semibold">
-          {riskLevel === "low" && "SEGURO"}
-          {riskLevel === "medium" && "ADVERTENCIA"}
-          {riskLevel === "high" && "PELIGROSO"}
+          {riskLevel === "low" && "SAFE"}
+          {riskLevel === "medium" && "WARNING"}
+          {riskLevel === "high" && "DANGEROUS"}
         </span>
       </div>
 
@@ -72,14 +84,14 @@ const ResultsPage: NextPage = () => {
                 : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               }`}
           >
-            {tab === "resumen" && "Resumen"}
-            {tab === "analisis" && "Análisis Semántico"}
+            {tab === "resumen" && "Summary"}
+            {tab === "analisis" && "Semantic Analysis"}
             {tab === "chat" && "Chatbot"}
           </button>
         ))}
       </div>
 
-      {/* Contenido */}
+      {/* Tab content */}
       <div className="mt-6 w-full max-w-4xl text-gray-800 dark:text-gray-200">
         {activeTab === "resumen" && <ResumenTab />}
         {activeTab === "analisis" && <AnalisisTab />}
