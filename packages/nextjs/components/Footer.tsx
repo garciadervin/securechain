@@ -14,18 +14,12 @@ export const Footer = () => {
         <span className="hidden md:inline">·</span>
 
         <p className="m-0">
-          Built with 💚 by{" "}
-          <span className="font-semibold text-emerald-500">SecureChain</span>
+          Built with 💚 by <span className="font-semibold text-emerald-500">SecureChain</span>
         </p>
 
         <span className="hidden md:inline">·</span>
 
-        <a
-          href="https://t.me/garciadervin"
-          target="_blank"
-          rel="noreferrer"
-          className="hover:underline cursor-pointer"
-        >
+        <a href="https://t.me/garciadervin" target="_blank" rel="noreferrer" className="hover:underline cursor-pointer">
           Support
         </a>
       </div>

@@ -1,5 +1,4 @@
 //"use client";
-
 import { useState } from "react";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 
@@ -49,7 +48,7 @@ contract SimpleStorage {
             "The following contract is your base context for answering any user question:\n" +
             testContract,
         },
-        ...newMessages.map((m) => ({
+        ...newMessages.map(m => ({
           role: m.role as "user" | "assistant" | "system",
           content: m.content,
         })),
@@ -65,13 +64,10 @@ contract SimpleStorage {
       const data = await res.json();
 
       // Append the assistant's reply to the conversation
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
     } catch (err) {
       console.error("Error sending message:", err);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Error processing the request." },
-      ]);
+      setMessages(prev => [...prev, { role: "assistant", content: "Error processing the request." }]);
     } finally {
       setLoading(false);
     }
@@ -84,10 +80,11 @@ contract SimpleStorage {
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`max-w-xs px-3 py-2 rounded-lg text-sm ${m.role === "user"
+            className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
+              m.role === "user"
                 ? "bg-emerald-500 text-white self-end ml-auto"
                 : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 self-start"
-              }`}
+            }`}
           >
             {m.content}
           </div>
@@ -101,7 +98,7 @@ contract SimpleStorage {
           type="text"
           placeholder="Type your question..."
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={e => setInput(e.target.value)}
           className="flex-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
         />
         <button

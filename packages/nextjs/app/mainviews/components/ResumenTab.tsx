@@ -41,10 +41,9 @@ export default function ResumenTab() {
   const qrValue =
     auditData.cid && auditData.cid.length > 0
       ? `https://ipfs.io/ipfs/${auditData.cid}`
-      : `${typeof window !== "undefined"
-        ? window.location.origin
-        : "https://securechain.app"
-      }/audit/${auditData.tokenId ?? ""}`;
+      : `${
+          typeof window !== "undefined" ? window.location.origin : "https://securechain.app"
+        }/audit/${auditData.tokenId ?? ""}`;
 
   /**
    * Downloads the QR code as a PNG image.
@@ -64,12 +63,10 @@ export default function ResumenTab() {
       <h3 className="text-lg font-semibold mb-2">Audit Data (Test)</h3>
       <ul className="list-disc list-inside space-y-1 mb-4">
         <li>
-          <strong>Audit for:</strong>{" "}
-          <span className="font-mono">{auditData.to}</span>
+          <strong>Audit for:</strong> <span className="font-mono">{auditData.to}</span>
         </li>
         <li>
-          <strong>Audited contract:</strong>{" "}
-          <span className="font-mono">{auditData.auditedContract}</span>
+          <strong>Audited contract:</strong> <span className="font-mono">{auditData.auditedContract}</span>
         </li>
         <li>
           <strong>Chain ID:</strong> {auditData.chainId}
@@ -104,35 +101,15 @@ export default function ResumenTab() {
       </div>
 
       {/* NFT Modal */}
-      <LocalModal
-        open={showNFTModal}
-        onClose={() => setShowNFTModal(false)}
-        title="Generate Certification NFT"
-      >
-        <NFTModalContent
-          auditData={auditData}
-          onClose={() => setShowNFTModal(false)}
-        />
+      <LocalModal open={showNFTModal} onClose={() => setShowNFTModal(false)} title="Generate Certification NFT">
+        <NFTModalContent auditData={auditData} onClose={() => setShowNFTModal(false)} />
       </LocalModal>
 
       {/* QR Modal */}
-      <LocalModal
-        open={showQRModal}
-        onClose={() => setShowQRModal(false)}
-        title="Generate Verification QR Code"
-      >
+      <LocalModal open={showQRModal} onClose={() => setShowQRModal(false)} title="Generate Verification QR Code">
         <div className="flex flex-col items-center">
-          <div
-            id="qr-container"
-            className="bg-white p-2 rounded-md dark:bg-gray-900"
-          >
-            <QRCodeSVG
-              value={qrValue}
-              size={160}
-              bgColor="#FFFFFF"
-              fgColor="#000000"
-              level="H"
-            />
+          <div id="qr-container" className="bg-white p-2 rounded-md dark:bg-gray-900">
+            <QRCodeSVG value={qrValue} size={160} bgColor="#FFFFFF" fgColor="#000000" level="H" />
           </div>
           <p className="mt-3 text-sm text-gray-600 dark:text-gray-300 text-center">
             Scan this code to view the full audit.
@@ -161,29 +138,16 @@ export default function ResumenTab() {
  *
  * Handles the minting of a Proof-of-Audit NFT using the provided audit data.
  */
-function NFTModalContent({
-  auditData,
-  onClose,
-}: {
-  auditData: AuditData;
-  onClose: () => void;
-}) {
-  const { writeContractAsync: writeProofOfAuditAsync, isMining } =
-    useScaffoldWriteContract({
-      contractName: "ProofOfAudit",
-    });
+function NFTModalContent({ auditData, onClose }: { auditData: AuditData; onClose: () => void }) {
+  const { writeContractAsync: writeProofOfAuditAsync, isMining } = useScaffoldWriteContract({
+    contractName: "ProofOfAudit",
+  });
 
   const handleMint = async () => {
     try {
       await writeProofOfAuditAsync({
         functionName: "mintAudit",
-        args: [
-          auditData.to,
-          auditData.auditedContract,
-          BigInt(auditData.chainId),
-          auditData.score,
-          auditData.cid,
-        ],
+        args: [auditData.to, auditData.auditedContract, BigInt(auditData.chainId), auditData.score, auditData.cid],
       });
       onClose();
     } catch (e) {
@@ -243,9 +207,7 @@ function LocalModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-900 shadow-lg">
         <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 px-5 py-4">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-            {title}
-          </h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
           <button
             onClick={onClose}
             className="rounded-md px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"

@@ -3,9 +3,7 @@
  * - "address": fetch by blockchain address and chain ID
  * - "ipfs": fetch by IPFS CID
  */
-export type SourceFetchInput =
-  | { kind: "address"; address: string; chainId: number }
-  | { kind: "ipfs"; cid: string };
+export type SourceFetchInput = { kind: "address"; address: string; chainId: number } | { kind: "ipfs"; cid: string };
 
 /**
  * Output type for a fetched source.
@@ -14,11 +12,11 @@ export type SourceFetchInput =
  */
 export type FetchedSource =
   | {
-    ok: true;
-    source: string;
-    origin: "sourcify" | "ipfs" | "bytecode";
-    files?: Record<string, string>;
-  }
+      ok: true;
+      source: string;
+      origin: "sourcify" | "ipfs" | "bytecode";
+      files?: Record<string, string>;
+    }
   | { ok: false; error: string };
 
 /**
@@ -29,16 +27,12 @@ const normalizeAddress = (addr: string) => addr.toLowerCase();
 /**
  * Fetches a contract source from IPFS, Sourcify, or directly from bytecode via RPC.
  */
-export async function fetchSource(
-  input: SourceFetchInput
-): Promise<FetchedSource> {
+export async function fetchSource(input: SourceFetchInput): Promise<FetchedSource> {
   try {
     // Fetch from IPFS
     if (input.kind === "ipfs") {
       const txt = await fetchFromIPFS(input.cid);
-      return txt
-        ? { ok: true, source: txt, origin: "ipfs" }
-        : { ok: false, error: "Unable to read IPFS CID" };
+      return txt ? { ok: true, source: txt, origin: "ipfs" } : { ok: false, error: "Unable to read IPFS CID" };
     }
 
     // Fetch by address
@@ -80,9 +74,7 @@ async function fetchSourcify(chainId: number, address: string) {
     const list = await fetch(listUrl);
     if (!list.ok) continue;
 
-    const filesResp = await fetch(
-      `${base}/${bucket}/${chainId}/${address}/sources/`
-    );
+    const filesResp = await fetch(`${base}/${bucket}/${chainId}/${address}/sources/`);
     if (!filesResp.ok) continue;
 
     const index = await filesResp.json().catch(() => null);
@@ -96,9 +88,7 @@ async function fetchSourcify(chainId: number, address: string) {
           bundle += `\n\n// -------- ${f.name} --------\n${f.content}`;
         } else {
           const fileUrl = `${base}/${bucket}/${chainId}/${address}/sources/${f.name}`;
-          const fileTxt = await fetch(fileUrl).then((r) =>
-            r.ok ? r.text() : ""
-          );
+          const fileTxt = await fetch(fileUrl).then(r => (r.ok ? r.text() : ""));
           if (fileTxt) {
             files[f.name] = fileTxt;
             bundle += `\n\n// -------- ${f.name} --------\n${fileTxt}`;
@@ -159,10 +149,7 @@ function rpcFor(chainId: number) {
  * Attempts to fetch a file from IPFS using multiple gateways.
  */
 async function fetchFromIPFS(cid: string) {
-  const gateways = [
-    `https://ipfs.io/ipfs/${cid}`,
-    `https://cloudflare-ipfs.com/ipfs/${cid}`,
-  ];
+  const gateways = [`https://ipfs.io/ipfs/${cid}`, `https://cloudflare-ipfs.com/ipfs/${cid}`];
   for (const url of gateways) {
     try {
       const r = await fetch(url);

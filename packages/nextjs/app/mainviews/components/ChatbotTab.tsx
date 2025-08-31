@@ -1,5 +1,4 @@
 //"use client";
-
 import { useState } from "react";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 
@@ -50,7 +49,7 @@ contract SimpleStorage {
             "This is the reference contract for all responses:\n" +
             testContract,
         },
-        ...newMessages.map((m) => ({
+        ...newMessages.map(m => ({
           role: m.role as "user" | "assistant" | "system",
           content: m.content,
         })),
@@ -69,10 +68,7 @@ contract SimpleStorage {
       setMessages([...newMessages, { role: "assistant", content: data.reply }]);
     } catch (err) {
       console.error("Error in ChatbotTab:", err);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Error processing the request." },
-      ]);
+      setMessages(prev => [...prev, { role: "assistant", content: "Error processing the request." }]);
     } finally {
       setLoading(false);
     }
@@ -85,10 +81,11 @@ contract SimpleStorage {
         {messages.map((m, i) => (
           <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
             <p
-              className={`inline-block px-3 py-2 rounded-lg text-sm ${m.role === "user"
+              className={`inline-block px-3 py-2 rounded-lg text-sm ${
+                m.role === "user"
                   ? "bg-emerald-500 text-white"
                   : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                }`}
+              }`}
             >
               {m.content}
             </p>
@@ -103,7 +100,7 @@ contract SimpleStorage {
           type="text"
           placeholder="Type your question..."
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={e => setInput(e.target.value)}
           className="flex-1 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm"
         />
         <button

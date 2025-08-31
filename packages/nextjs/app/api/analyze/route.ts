@@ -14,7 +14,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
  * The model is instructed to return ONLY valid JSON matching a predefined schema.
  * The response is parsed and returned to the client.
  */
-export async function POST(req: Request) {
+export async function POST(_req: Request) {
   try {
     /**
      * Example Solidity contract.
@@ -47,7 +47,8 @@ contract SimpleStorage {
     const userPrompt =
       "Audit the following contract. Identify vulnerabilities, risks, severity, and recommendations. " +
       "If the content is incomplete, mention limitations in the summary but try to infer potential risks. " +
-      "Code:\n" + testContract;
+      "Code:\n" +
+      testContract;
 
     /**
      * Call the Groq API to generate the audit.
@@ -77,19 +78,16 @@ contract SimpleStorage {
       analysis = match
         ? JSON.parse(match[0])
         : {
-          summary: "Unable to parse model response",
-          score: 50,
-          risks: [],
-          recommendations: [],
-        };
+            summary: "Unable to parse model response",
+            score: 50,
+            risks: [],
+            recommendations: [],
+          };
     }
 
     return NextResponse.json({ analysis });
   } catch (e: any) {
     console.error("Error in /api/analyze:", e);
-    return NextResponse.json(
-      { error: e?.message || "Unknown error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: e?.message || "Unknown error" }, { status: 500 });
   }
 }

@@ -49,7 +49,8 @@ contract SimpleStorage {
           "You are an expert Solidity smart contract auditor. Always respond in plain text, " +
           "using line breaks to separate ideas. Do not use tables, bullet points, " +
           "or any special formatting such as Markdown. " +
-          "Here is the reference contract:\n" + testContract,
+          "Here is the reference contract:\n" +
+          testContract,
       },
       ...(userMessages || []),
     ];
@@ -70,9 +71,6 @@ contract SimpleStorage {
     return NextResponse.json({ reply });
   } catch (error) {
     console.error("Error in /api/chat:", error);
-    return NextResponse.json(
-      { reply: "Error processing the request." },
-      { status: 500 }
-    );
+    return NextResponse.json({ reply: "Error processing the request." }, { status: 500 });
   }
 }

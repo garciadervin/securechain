@@ -66,9 +66,7 @@ export default function AnalisisTab() {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-2">
-        Semantic Analysis (Test Contract)
-      </h3>
+      <h3 className="text-lg font-semibold mb-2">Semantic Analysis (Test Contract)</h3>
 
       {/* Action button */}
       <div className="flex gap-3 mb-4">
@@ -82,11 +80,7 @@ export default function AnalisisTab() {
       </div>
 
       {/* Error message */}
-      {error && (
-        <p className="text-sm text-red-500 mb-3">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
 
       {/* Initial instructions */}
       {!analysis && !loading && !error && (
@@ -107,9 +101,7 @@ export default function AnalisisTab() {
           {/* Summary */}
           <div>
             <h4 className="font-semibold mb-1">Summary</h4>
-            <p className="text-sm text-gray-800 dark:text-gray-200">
-              {analysis.summary}
-            </p>
+            <p className="text-sm text-gray-800 dark:text-gray-200">{analysis.summary}</p>
           </div>
 
           {/* Risks */}
@@ -120,19 +112,18 @@ export default function AnalisisTab() {
                 <li key={i}>
                   <span className="font-semibold">{r.title}</span>{" "}
                   <span
-                    className={`ml-2 text-xs px-2 py-0.5 rounded ${r.severity === "high"
+                    className={`ml-2 text-xs px-2 py-0.5 rounded ${
+                      r.severity === "high"
                         ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                         : r.severity === "medium"
                           ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                           : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
-                      }`}
+                    }`}
                   >
                     {r.severity.toUpperCase()}
                   </span>
                   <p className="text-sm mt-1">{r.details}</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Mitigation: {r.mitigation}
-                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mitigation: {r.mitigation}</p>
                 </li>
               ))}
             </ul>
