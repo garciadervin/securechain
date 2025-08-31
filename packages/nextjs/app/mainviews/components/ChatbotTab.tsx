@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { AuditData } from "./ResumenTab";
+import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 
-export default function ChatbotTab({ auditData }: { auditData: AuditData }) {
+export default function ChatbotTab() {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -11,27 +11,42 @@ export default function ChatbotTab({ auditData }: { auditData: AuditData }) {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    // Añadimos el mensaje del usuario al historial
     const newMessages = [...messages, { role: "user", content: input }];
     setMessages(newMessages);
     setInput("");
     setLoading(true);
 
     try {
+      // Contrato de prueba que siempre se usará como contexto
+      const testContract = `
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SimpleStorage {
+    uint256 private value;
+    function set(uint256 _value) public { value = _value; }
+    function get() public view returns (uint256) { return value; }
+}
+      `;
+
+      const contextMessages: ChatCompletionMessageParam[] = [
+        {
+          role: "system",
+          content: `Eres un asistente experto en auditoría de contratos inteligentes.
+Explica de forma clara y amigable.
+Este es el contrato de referencia para todas las respuestas:
+${testContract}`
+        },
+        ...newMessages.map(m => ({
+          role: m.role as "user" | "assistant" | "system",
+          content: m.content
+        }))
+      ];
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content: `Eres un asistente experto en auditoría de contratos inteligentes. 
-              Explica de forma clara y amigable. 
-              Contexto del contrato: ${JSON.stringify(auditData)}`,
-            },
-            ...newMessages,
-          ],
-        }),
+        body: JSON.stringify({ messages: contextMessages }),
       });
 
       const data = await res.json();

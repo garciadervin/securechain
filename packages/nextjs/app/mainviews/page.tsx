@@ -12,16 +12,18 @@ type Tab = "resumen" | "analisis" | "chat";
 const ResultsPage: NextPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("resumen");
 
+  // Datos de prueba fijos
   const auditData = {
-    auditedContract: "0x000000000000000000000000000000000000dEaD",
-    chainId: 31337,
-    score: 95,
-    cid: "QmHashDeEjemplo",
-    to: "0x1234567890abcdef1234567890abcdef12345678",
+    auditedContract: "0x1234567890abcdef1234567890abcdef12345678",
+    chainId: 1,
+    score: 85,
+    cid: "QmTestExampleCID1234567890abcdef",
+    to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
     tokenId: 1,
   };
 
-  const riskLevel: RiskLevel = auditData.score >= 80 ? "low" : auditData.score >= 50 ? "medium" : "high";
+  const riskLevel: RiskLevel =
+    auditData.score >= 80 ? "low" : auditData.score >= 50 ? "medium" : "high";
 
   const getRiskColor = () => {
     switch (riskLevel) {
@@ -40,7 +42,8 @@ const ResultsPage: NextPage = () => {
       <header className="w-full max-w-4xl mb-6">
         <h1 className="text-3xl font-bold text-emerald-500 mb-2">SecureChain</h1>
         <div className="text-sm text-gray-600 dark:text-gray-400">
-          Contrato auditado: <span className="font-mono">{auditData.auditedContract}</span> | Chain ID:{" "}
+          Contrato auditado:{" "}
+          <span className="font-mono">{auditData.auditedContract}</span> | Chain ID:{" "}
           {auditData.chainId}
         </div>
       </header>
@@ -60,15 +63,14 @@ const ResultsPage: NextPage = () => {
 
       {/* Tabs */}
       <div className="mt-8 w-full max-w-4xl border-b border-gray-200 dark:border-gray-700 flex">
-        {(["resumen", "analisis", "chat"] as Tab[]).map(tab => (
+        {(["resumen", "analisis", "chat"] as Tab[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab
+            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
                 ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
                 : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-            }`}
+              }`}
           >
             {tab === "resumen" && "Resumen"}
             {tab === "analisis" && "Análisis Semántico"}
@@ -79,9 +81,9 @@ const ResultsPage: NextPage = () => {
 
       {/* Contenido */}
       <div className="mt-6 w-full max-w-4xl text-gray-800 dark:text-gray-200">
-        {activeTab === "resumen" && <ResumenTab auditData={auditData} />}
-        {activeTab === "analisis" && <AnalisisTab auditData={auditData} />}
-        {activeTab === "chat" && <ChatbotTab auditData={auditData} />}
+        {activeTab === "resumen" && <ResumenTab />}
+        {activeTab === "analisis" && <AnalisisTab />}
+        {activeTab === "chat" && <ChatbotTab />}
       </div>
     </div>
   );

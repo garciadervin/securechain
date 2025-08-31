@@ -14,7 +14,17 @@ export interface AuditData {
   tokenId?: number;
 }
 
-export default function ResumenTab({ auditData }: { auditData: AuditData }) {
+export default function ResumenTab() {
+  // Datos de prueba fijos
+  const auditData: AuditData = {
+    auditedContract: "0x1234567890abcdef1234567890abcdef12345678",
+    chainId: 1,
+    score: 85,
+    cid: "QmTestExampleCID1234567890abcdef",
+    to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+    tokenId: 1,
+  };
+
   const [showNFTModal, setShowNFTModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
 
@@ -35,7 +45,7 @@ export default function ResumenTab({ auditData }: { auditData: AuditData }) {
 
   return (
     <>
-      <h3 className="text-lg font-semibold mb-2">Datos de la auditoría</h3>
+      <h3 className="text-lg font-semibold mb-2">Datos de la auditoría (Prueba)</h3>
       <ul className="list-disc list-inside space-y-1 mb-4">
         <li>
           <strong>Auditoría para:</strong> <span className="font-mono">{auditData.to}</span>
@@ -108,7 +118,7 @@ export default function ResumenTab({ auditData }: { auditData: AuditData }) {
   );
 }
 
-/* Contenido del modal NFT con integración Scaffold-ETH 2 */
+/* Contenido del modal NFT */
 function NFTModalContent({ auditData, onClose }: { auditData: AuditData; onClose: () => void }) {
   const { writeContractAsync: writeProofOfAuditAsync, isMining } = useScaffoldWriteContract({
     contractName: "ProofOfAudit",
