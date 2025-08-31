@@ -1,4 +1,4 @@
-"use client";
+//"use client";
 
 import { useState } from "react";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";

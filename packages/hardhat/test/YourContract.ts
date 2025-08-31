@@ -39,7 +39,7 @@ describe("ProofOfAudit", function () {
         "0x000000000000000000000000000000000000dEaD", // dummy audited contract
         31337, // local chainId
         95, // score
-        "QmHashDeEjemplo" // IPFS CID
+        "QmHashDeEjemplo", // IPFS CID
       );
 
       const receipt = await tx.wait();
@@ -67,7 +67,7 @@ describe("ProofOfAudit", function () {
       await expect(
         proofOfAudit
           .connect(user)
-          .mintAudit(user.address, "0x000000000000000000000000000000000000dEaD", 31337, 80, "QmOtroHash")
+          .mintAudit(user.address, "0x000000000000000000000000000000000000dEaD", 31337, 80, "QmOtroHash"),
       ).to.be.revertedWith("AccessControl: account"); // or use .to.be.revertedWithCustomError if defined
     });
   });
