@@ -4,7 +4,7 @@ import { ProofOfAudit } from "../typechain-types";
 
 /**
  * Test suite for the ProofOfAudit smart contract.
- * 
+ *
  * NOTE: This contract allows open minting for demonstration purposes
  * in the Aleph Hackathon. In a production environment, you may want
  * to restrict minting to authorized auditors only.
@@ -113,13 +113,9 @@ describe("ProofOfAudit", function () {
 
   describe("Audit revocation", function () {
     it("Should allow the auditor to revoke their own audit", async function () {
-      const tx = await proofOfAudit.connect(auditor).mintAudit(
-        user.address,
-        "0x000000000000000000000000000000000000dEaD",
-        31337,
-        75,
-        "QmToRevoke",
-      );
+      const tx = await proofOfAudit
+        .connect(auditor)
+        .mintAudit(user.address, "0x000000000000000000000000000000000000dEaD", 31337, 75, "QmToRevoke");
 
       const receipt = await tx.wait();
       const event = receipt?.logs
@@ -140,13 +136,9 @@ describe("ProofOfAudit", function () {
     });
 
     it("Should allow admin to revoke any audit", async function () {
-      const tx = await proofOfAudit.connect(user).mintAudit(
-        user.address,
-        "0x000000000000000000000000000000000000dEaD",
-        31337,
-        85,
-        "QmAdminRevoke",
-      );
+      const tx = await proofOfAudit
+        .connect(user)
+        .mintAudit(user.address, "0x000000000000000000000000000000000000dEaD", 31337, 85, "QmAdminRevoke");
 
       const receipt = await tx.wait();
       const event = receipt?.logs

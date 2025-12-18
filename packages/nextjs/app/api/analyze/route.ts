@@ -7,7 +7,7 @@ import Groq from "groq-sdk";
  * This endpoint sends a Solidity smart contract to the Groq LLM for security auditing.
  * The model is instructed to return ONLY valid JSON matching a predefined schema.
  * The response is parsed and returned to the client.
- * 
+ *
  * If GROQ_API_KEY is not set, returns demo data for hackathon presentation.
  */
 export async function POST(_req: Request) {

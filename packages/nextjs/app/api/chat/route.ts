@@ -9,7 +9,7 @@ import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/complet
  * to the Groq LLM for plain‑text auditing feedback.
  * The system prompt enforces plain text output with line breaks, no tables,
  * no bullet points, and no Markdown formatting.
- * 
+ *
  * If GROQ_API_KEY is not set, returns a friendly error message.
  */
 export async function POST(req: Request) {
