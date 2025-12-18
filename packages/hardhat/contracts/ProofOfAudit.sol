@@ -64,7 +64,14 @@ contract ProofOfAudit is ERC721, AccessControl, EIP712 {
 
     /**
      * @notice Direct minting of an audit NFT.
-     * @dev No role restriction; anyone can mint.
+     * @dev Open minting allowed for demonstration purposes in Aleph Hackathon.
+     *      For production use, consider adding onlyRole(AUDITOR_ROLE) modifier.
+     * @param to Address to receive the audit NFT
+     * @param auditedContract Address of the contract being audited
+     * @param chainId_ Chain ID where the audited contract is deployed
+     * @param score Audit score (1-100)
+     * @param cid IPFS CID of the audit report
+     * @return tokenId The ID of the minted audit NFT
      */
     function mintAudit(
         address to,

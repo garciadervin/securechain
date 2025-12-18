@@ -4,6 +4,10 @@ import { ProofOfAudit } from "../typechain-types";
 
 /**
  * Test suite for the ProofOfAudit smart contract.
+ * 
+ * NOTE: This contract allows open minting for demonstration purposes
+ * in the Aleph Hackathon. In a production environment, you may want
+ * to restrict minting to authorized auditors only.
  */
 describe("ProofOfAudit", function () {
   let proofOfAudit: ProofOfAudit;
@@ -63,12 +67,103 @@ describe("ProofOfAudit", function () {
       expect(auditData.cid).to.equal("QmHashDeEjemplo");
     });
 
-    it("Should revert if a non-auditor tries to mint", async function () {
+    it("Should allow anyone to mint for demo purposes", async function () {
+      const tx = await proofOfAudit
+        .connect(user)
+        .mintAudit(user.address, "0x000000000000000000000000000000000000dEaD", 31337, 80, "QmOtroHash");
+
+      const receipt = await tx.wait();
+      const event = receipt?.logs
+        .map(log => {
+          try {
+            return proofOfAudit.interface.parseLog(log);
+          } catch {
+            return null;
+          }
+        })
+        .find(e => e && e.name === "AuditMinted");
+
+      expect(event?.args?.to).to.equal(user.address);
+      expect(event?.args?.score).to.equal(80);
+      expect(event?.args?.cid).to.equal("QmOtroHash");
+    });
+
+    it("Should revert if score is out of range", async function () {
       await expect(
-        proofOfAudit
-          .connect(user)
-          .mintAudit(user.address, "0x000000000000000000000000000000000000dEaD", 31337, 80, "QmOtroHash"),
-      ).to.be.revertedWith("AccessControl: account"); // or use .to.be.revertedWithCustomError if defined
+        proofOfAudit.connect(user).mintAudit(
+          user.address,
+          "0x000000000000000000000000000000000000dEaD",
+          31337,
+          0, // invalid score
+          "QmInvalidScore",
+        ),
+      ).to.be.revertedWith("Score out of range");
+
+      await expect(
+        proofOfAudit.connect(user).mintAudit(
+          user.address,
+          "0x000000000000000000000000000000000000dEaD",
+          31337,
+          101, // invalid score
+          "QmInvalidScore",
+        ),
+      ).to.be.revertedWith("Score out of range");
+    });
+  });
+
+  describe("Audit revocation", function () {
+    it("Should allow the auditor to revoke their own audit", async function () {
+      const tx = await proofOfAudit.connect(auditor).mintAudit(
+        user.address,
+        "0x000000000000000000000000000000000000dEaD",
+        31337,
+        75,
+        "QmToRevoke",
+      );
+
+      const receipt = await tx.wait();
+      const event = receipt?.logs
+        .map(log => {
+          try {
+            return proofOfAudit.interface.parseLog(log);
+          } catch {
+            return null;
+          }
+        })
+        .find(e => e && e.name === "AuditMinted");
+
+      const tokenId = event?.args?.tokenId;
+
+      await proofOfAudit.connect(auditor).revoke(tokenId);
+      const auditData = await proofOfAudit.auditOfToken(tokenId);
+      expect(auditData.revoked).to.equal(true);
+    });
+
+    it("Should allow admin to revoke any audit", async function () {
+      const tx = await proofOfAudit.connect(user).mintAudit(
+        user.address,
+        "0x000000000000000000000000000000000000dEaD",
+        31337,
+        85,
+        "QmAdminRevoke",
+      );
+
+      const receipt = await tx.wait();
+      const event = receipt?.logs
+        .map(log => {
+          try {
+            return proofOfAudit.interface.parseLog(log);
+          } catch {
+            return null;
+          }
+        })
+        .find(e => e && e.name === "AuditMinted");
+
+      const tokenId = event?.args?.tokenId;
+
+      await proofOfAudit.connect(owner).revoke(tokenId);
+      const auditData = await proofOfAudit.auditOfToken(tokenId);
+      expect(auditData.revoked).to.equal(true);
     });
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePublicClient } from "wagmi";
 
 /**
  * Represents a single identified risk in the audit.
@@ -25,17 +26,25 @@ type Analysis = {
 /**
  * AnalisisTab Component
  *
- * This component triggers a smart contract audit request to the `/api/analyze` endpoint
- * and displays the resulting score, summary, risks, and recommendations.
+ * This component fetches contract bytecode from the blockchain and sends it
+ * to the `/api/analyze` endpoint for AI-powered security auditing.
+ * Results are displayed and passed to parent component via callback.
  */
-export default function AnalisisTab() {
+export default function AnalisisTab({
+  contractAddress,
+  onAnalysisComplete,
+}: {
+  contractAddress?: string;
+  onAnalysisComplete?: (result: Analysis) => void;
+}) {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const publicClient = usePublicClient();
 
   /**
    * Calls the backend API to run the analysis.
-   * Currently sends no payload — the API uses a test contract internally.
+   * Fetches bytecode from blockchain if contract address is provided.
    */
   const runAnalysis = async () => {
     setLoading(true);
@@ -43,10 +52,24 @@ export default function AnalisisTab() {
     setAnalysis(null);
 
     try {
+      let bytecode: string | undefined;
+
+      // Fetch bytecode from blockchain if address provided
+      if (contractAddress && publicClient) {
+        try {
+          const code = await publicClient.getBytecode({
+            address: contractAddress as `0x${string}`,
+          });
+          bytecode = code;
+        } catch (e) {
+          console.warn("Could not fetch bytecode, using test contract:", e);
+        }
+      }
+
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}), // No payload; backend uses a test contract
+        body: JSON.stringify({ contractAddress, bytecode }),
       });
 
       const data = await res.json();
@@ -56,6 +79,11 @@ export default function AnalisisTab() {
       }
 
       setAnalysis(data.analysis);
+
+      // Pass result to parent component
+      if (onAnalysisComplete && data.analysis) {
+        onAnalysisComplete(data.analysis);
+      }
     } catch (e: any) {
       console.error("Error in AnalisisTab:", e);
       setError(e?.message || "Unknown error");
@@ -112,13 +140,12 @@ export default function AnalisisTab() {
                 <li key={i}>
                   <span className="font-semibold">{r.title}</span>{" "}
                   <span
-                    className={`ml-2 text-xs px-2 py-0.5 rounded ${
-                      r.severity === "high"
-                        ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                        : r.severity === "medium"
-                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                          : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
-                    }`}
+                    className={`ml-2 text-xs px-2 py-0.5 rounded ${r.severity === "high"
+                      ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                      : r.severity === "medium"
+                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                        : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
+                      }`}
                   >
                     {r.severity.toUpperCase()}
                   </span>

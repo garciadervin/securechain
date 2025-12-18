@@ -1,4 +1,4 @@
-//"use client";
+"use client";
 import { useState } from "react";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 
@@ -81,11 +81,10 @@ contract SimpleStorage {
         {messages.map((m, i) => (
           <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
             <p
-              className={`inline-block px-3 py-2 rounded-lg text-sm ${
-                m.role === "user"
+              className={`inline-block px-3 py-2 rounded-lg text-sm ${m.role === "user"
                   ? "bg-emerald-500 text-white"
                   : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              }`}
+                }`}
             >
               {m.content}
             </p>

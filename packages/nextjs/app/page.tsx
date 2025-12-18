@@ -70,15 +70,21 @@ const Home: NextPage = () => {
 
       {/* Example addresses */}
       <section className="mt-8 flex flex-wrap justify-center gap-3 w-full max-w-md">
-        {["0x000000000000000000000000000000000000dEaD", "0x1234...abcd"].map(ex => (
+        {[
+          { label: "USDT (Tether)", address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
+          { label: "WETH (Wrapped Ether)", address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" },
+        ].map(({ label, address }) => (
           <div
-            key={ex}
+            key={address}
             className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 flex items-center justify-between w-full sm:w-[280px] shadow-sm"
           >
-            <code className="text-xs font-mono text-gray-700 dark:text-gray-200 truncate">{ex}</code>
+            <div className="flex flex-col flex-1 min-w-0 mr-2">
+              <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">{label}</span>
+              <code className="text-xs font-mono text-gray-500 dark:text-gray-400 truncate">{address}</code>
+            </div>
             <button
-              onClick={() => handleSearch(ex)}
-              className="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+              onClick={() => handleSearch(address)}
+              className="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer flex-shrink-0"
             >
               Try
             </button>

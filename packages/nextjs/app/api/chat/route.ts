@@ -3,21 +3,32 @@ import Groq from "groq-sdk";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 
 /**
- * Initialize Groq client with API key from environment variables.
- * Make sure GROQ_API_KEY is set in your environment.
- */
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-/**
  * POST /api/chat
  *
  * This endpoint sends a conversation (including a reference Solidity contract)
  * to the Groq LLM for plain‑text auditing feedback.
  * The system prompt enforces plain text output with line breaks, no tables,
  * no bullet points, and no Markdown formatting.
+ * 
+ * If GROQ_API_KEY is not set, returns a friendly error message.
  */
 export async function POST(req: Request) {
+  // Check if API key is configured
+  if (!process.env.GROQ_API_KEY) {
+    return NextResponse.json({
+      reply:
+        "⚠️ Chatbot unavailable: GROQ_API_KEY not configured.\n\n" +
+        "To enable the AI chatbot, please add your Groq API key to the .env.local file.\n" +
+        "Get your free API key at: https://console.groq.com\n\n" +
+        "This is a demo mode message for the Aleph Hackathon presentation.",
+    });
+  }
+
   try {
+    /**
+     * Initialize Groq client with API key from environment variables.
+     */
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     // Extract user messages from the request body
     const { messages: userMessages } = await req.json();
 

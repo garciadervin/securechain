@@ -2,20 +2,53 @@ import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
 /**
- * Initialize Groq client with API key from environment variables.
- * Make sure GROQ_API_KEY is set in your environment.
- */
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-/**
  * POST /api/analyze
  *
  * This endpoint sends a Solidity smart contract to the Groq LLM for security auditing.
  * The model is instructed to return ONLY valid JSON matching a predefined schema.
  * The response is parsed and returned to the client.
+ * 
+ * If GROQ_API_KEY is not set, returns demo data for hackathon presentation.
  */
 export async function POST(_req: Request) {
+  // Check if API key is configured
+  if (!process.env.GROQ_API_KEY) {
+    console.warn("GROQ_API_KEY not configured, returning demo data");
+    return NextResponse.json({
+      analysis: {
+        score: 75,
+        summary:
+          "Demo mode: GROQ_API_KEY not configured. This is sample analysis data. " +
+          "The contract appears to have basic functionality with moderate security considerations. " +
+          "To get real AI-powered analysis, please configure GROQ_API_KEY in your .env.local file.",
+        risks: [
+          {
+            title: "Configuration Required",
+            severity: "medium" as const,
+            details: "GROQ_API_KEY environment variable is not set. Real AI analysis is unavailable.",
+            mitigation: "Add GROQ_API_KEY to .env.local file. Get your key from https://console.groq.com",
+          },
+          {
+            title: "Demo Data",
+            severity: "low" as const,
+            details: "This is sample data for demonstration purposes only.",
+            mitigation: "Configure the API key to enable real smart contract analysis.",
+          },
+        ],
+        recommendations: [
+          "Configure GROQ_API_KEY for real AI-powered analysis",
+          "Review the contract manually for security vulnerabilities",
+          "Consider professional audit services for production contracts",
+        ],
+      },
+    });
+  }
+
   try {
+    /**
+     * Initialize Groq client with API key from environment variables.
+     */
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     /**
      * Example Solidity contract.
      * In production, replace this with a contract received in the request body.
@@ -67,22 +100,46 @@ contract SimpleStorage {
 
     /**
      * Attempt to parse the model's response as JSON.
-     * If parsing fails, try to extract the last JSON object from the text.
+     * If parsing fails, try to extract JSON from the text.
      * If that also fails, return a default object with an error message.
      */
     let analysis;
     try {
       analysis = JSON.parse(raw);
     } catch {
-      const match = raw.match(/\{[\s\S]*\}$/);
-      analysis = match
-        ? JSON.parse(match[0])
-        : {
-            summary: "Unable to parse model response",
+      // Try to find JSON object in the response
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          // Clean up any trailing commas or invalid JSON
+          const cleaned = jsonMatch[0]
+            .replace(/,(\s*[}\]])/g, "$1") // Remove trailing commas
+            .replace(/[\u0000-\u001F]+/g, ""); // Remove control characters
+          analysis = JSON.parse(cleaned);
+        } catch (e) {
+          console.error("Failed to parse cleaned JSON:", e);
+          analysis = {
+            summary: "Unable to parse AI response. Using default analysis.",
             score: 50,
-            risks: [],
-            recommendations: [],
+            risks: [
+              {
+                title: "Analysis Error",
+                severity: "medium",
+                details: "The AI response could not be parsed correctly.",
+                mitigation: "Try running the analysis again.",
+              },
+            ],
+            recommendations: ["Retry the analysis", "Check API configuration"],
           };
+        }
+      } else {
+        analysis = {
+          summary: "No valid JSON found in AI response.",
+          score: 50,
+          risks: [],
+          recommendations: ["Retry the analysis"],
+        };
+      }
     }
 
     return NextResponse.json({ analysis });

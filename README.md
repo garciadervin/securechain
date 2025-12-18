@@ -2,6 +2,8 @@
 
 **SecureChain** is a decentralized platform for auditing and certifying smart contracts on blockchain. It enables auditors to issue verifiable NFT certificates linked to IPFS reports, providing transparency, traceability, and trust for smart contract security.
 
+> **Note**: This is a demonstration project for the Aleph Hackathon. The smart contract allows open minting for testing and demonstration purposes.
+
 ---
 
 ## 🚀 Features
@@ -25,9 +27,9 @@
 
 ## 📄 Smart Contract
 
-The core contract is [`ProofOfAudit.sol`](./contracts/ProofOfAudit.sol), which includes:
+The core contract is `ProofOfAudit.sol`, which includes:
 
-- `mintAudit`: Direct minting by auditors
+- `mintAudit`: Direct minting (open for demo purposes)
 - `mintAuditWithSig`: Signature-based minting
 - `revoke`: Allows revocation of audits
 - `auditSummary`: Returns full audit metadata
@@ -47,7 +49,8 @@ Example test coverage includes:
 
 - Role-based access control
 - Audit minting and event emission
-- Revert conditions for unauthorized actions
+- Score validation
+- Audit revocation
 
 ---
 
@@ -74,11 +77,28 @@ The frontend is built with **Next.js**, **Tailwind CSS**, and **RainbowKit**. Ke
 
 ---
 
-## 📚 Documentation
+## 🚀 Getting Started
 
-- [Smart Contract Audit Flow](./docs/audit-flow.md)
-- [API Reference](./docs/api.md)
-- [Architecture Overview](./docs/architecture.md)
+### Prerequisites
+
+- Node.js >= 20.18.3
+- Yarn 3.2.3
+
+### Installation
+
+```bash
+# Install dependencies
+yarn install
+
+# Start local blockchain
+yarn chain
+
+# Deploy contracts (in another terminal)
+yarn deploy
+
+# Start frontend
+yarn start
+```
 
 ---
 

@@ -23,4 +23,5 @@ node_modules
 dist
 
 # environment variables
-.env.local
+.env
+.env*.local
