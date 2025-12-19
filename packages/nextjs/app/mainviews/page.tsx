@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import UnifiedAuditView from "./components/UnifiedAuditView";
 import type { NextPage } from "next";
 import { Address } from "~~/components/scaffold-eth";
@@ -25,12 +26,12 @@ function ResultsPageContent() {
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             Please provide a contract address in the URL to view audit results.
           </p>
-          <a
+          <Link
             href="/"
             className="inline-block px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md font-medium transition-colors"
           >
             Go to Home
-          </a>
+          </Link>
         </div>
       </div>
     );

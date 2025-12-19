@@ -40,6 +40,7 @@ export default function UnifiedAuditView({ contractAddress }: { contractAddress:
    */
   useEffect(() => {
     runAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractAddress]);
 
   /**
@@ -91,7 +92,7 @@ export default function UnifiedAuditView({ contractAddress }: { contractAddress:
   /**
    * Simulate IPFS upload (for demo purposes)
    */
-  const simulateIPFSUpload = async (analysisData: any) => {
+  const simulateIPFSUpload = async (_analysis: any) => {
     setIpfsUploading(true);
     // Simulate upload delay
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -224,13 +225,12 @@ export default function UnifiedAuditView({ contractAddress }: { contractAddress:
 
       {/* Score Card */}
       <div
-        className={`rounded-xl p-6 shadow-sm border text-center ${
-          riskLevel === "low"
+        className={`rounded-xl p-6 shadow-sm border text-center ${riskLevel === "low"
             ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800"
             : riskLevel === "medium"
               ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800"
               : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border-red-200 dark:border-red-800"
-        }`}
+          }`}
       >
         <h2 className="text-sm uppercase tracking-wide font-medium">Security Score</h2>
         <p className="text-5xl font-bold mt-2">{score}</p>
@@ -257,13 +257,12 @@ export default function UnifiedAuditView({ contractAddress }: { contractAddress:
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-semibold text-sm">{risk.title}</span>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded ${
-                      risk.severity === "high"
+                    className={`text-xs px-2 py-0.5 rounded ${risk.severity === "high"
                         ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                         : risk.severity === "medium"
                           ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                           : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
-                    }`}
+                      }`}
                   >
                     {risk.severity.toUpperCase()}
                   </span>
@@ -389,11 +388,10 @@ export default function UnifiedAuditView({ contractAddress }: { contractAddress:
             {messages.map((m, i) => (
               <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
                 <p
-                  className={`inline-block px-3 py-2 rounded-lg text-sm max-w-[80%] ${
-                    m.role === "user"
+                  className={`inline-block px-3 py-2 rounded-lg text-sm max-w-[80%] ${m.role === "user"
                       ? "bg-purple-500 text-white"
                       : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                  }`}
+                    }`}
                 >
                   {m.content}
                 </p>
